@@ -1,2 +1,4 @@
 django_venv/
 djnago_project/db.sqlite3
+django_project/django_app/__pycache__/
+
