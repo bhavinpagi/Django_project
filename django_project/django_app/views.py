@@ -11,5 +11,4 @@ def index(request):
 
 def products(request):
     products= Products.objects.all()
-    print(products)
-    return HttpResponse(products)
+    return render(request,'product.html', context={'products':products})

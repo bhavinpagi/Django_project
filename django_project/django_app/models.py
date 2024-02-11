@@ -16,4 +16,6 @@ class Products(models.Model):
         verbose_name_plural = 'Products'
 
     def __str__(self):
-        return self.product_name
+        return f"Name : {self.product_name}, Discription: {self.product_description}, Rating: {self.rating}, Price: {self.price}"
+    # def __int__(self):
+    #     return f"Rating: {self.rating}"
