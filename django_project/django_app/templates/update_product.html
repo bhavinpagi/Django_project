@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <div class="container">
+
+    <h1>Update product</h1>
+    <form method="POST" action="{% url 'update_product' product_object.id  %}">
+      {% csrf_token %} 
+    <div class="card" style="width: 20rem;">
+        <img class="card-img-top" src="{{product_object.product_image.url}}" alt="Card image cap" style="height: 286px; width: 280px;">
+        <div class="card-body">
+          <h5 class="card-title">Product_name : <input name="product_name" value="{{product_object.product_name}}"></input> </h5>
+          <p class="card-text">Product_dicription : <textarea name="product_description"> {{product_object.product_description}}</textarea> </p>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Product_price : <input name="product_price" value="{{product_object.price}}"></input></li>
+          <li class="list-group-item">Product_Ratting : <input name="product_rating" value="{{product_object.rating}}"></input></li>
+          <li class="list-group-item">available_quantity : <input name="product_quantity" value="{{product_object.available_quentity}}"></input></li>
+        </ul>
+        <button type="submit" class="btn btn-success">Update Product</button>
+        <button type="button" class="btn btn-danger">Cancel</button>
+
+      </div> <br><br><br>
+    </div>
+  </form>
+
+   
+  {% endblock %}

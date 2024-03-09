@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 
 # Create your models here.
@@ -10,7 +12,8 @@ class Products(models.Model):
     rating = models.FloatField()
     available_quentity = models.IntegerField()
     pending_quentity = models.IntegerField()
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name_plural = 'Products'
