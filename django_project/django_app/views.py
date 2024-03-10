@@ -2,7 +2,7 @@ import datetime
 
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from .models import Products
+from .models import Products, UserCartModel
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
@@ -102,6 +102,10 @@ def update_product(request, product_id):
     return render(request=request, template_name='update_product.html', context=context)
 
 def add_product(request):
+    print(request.user.is_authenticated)
+    if not request.user.is_authenticated:
+        return redirect('user_login')
+    
     if request.method == "POST":
         product_name = request.POST.get('product_name')
         product_description = request.POST.get('product_description')
@@ -109,7 +113,7 @@ def add_product(request):
         product_rating = request.POST.get('product_rating')
         available_quantity = request.POST.get('available_quantity')
         product_image = request.FILES.get('product_image')
-
+        
         product_obj = Products.objects.create(
             product_name=product_name,
             product_description=product_description,
@@ -120,7 +124,37 @@ def add_product(request):
             product_image=product_image
         )
         product_obj.save()
-        
-
+        return redirect('products')
     context = {}
     return render(request, 'add_product.html', context)
+
+def delete_product(request, product_id):
+    Products.objects.filter(id=product_id).delete()
+    return redirect('products')
+
+def add_to_cart(request, product_id):
+    product_obj = Products.objects.filter(id=product_id).first()
+    user_obj = User.objects.filter(username=request.user.username).first()
+
+    if request.method == "POST":
+        cart_value = request.POST.get('cart_value')
+        already_added_obj = UserCartModel.objects.filter(product_id=product_id).first()
+        if already_added_obj:
+            already_added_obj.quantity += int(cart_value)
+            already_added_obj.save()
+        else:
+            cart_obj = UserCartModel.objects.create(
+                product_id = product_obj,
+                user_id = user_obj,
+                quantity = cart_value
+            )
+            cart_obj.save()
+        print(cart_value, "cart_value")
+    return redirect('display_cart')
+
+def display_cart(request):
+    user_obj = User.objects.filter(username=request.user.username).first()
+    cart_obj = UserCartModel.objects.filter(user_id_id=user_obj.id)
+    context = {"user_obj": user_obj, "cart_obj": cart_obj}
+    return render(request, 'display_cart.html', context)
+

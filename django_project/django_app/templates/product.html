@@ -15,10 +15,18 @@
           <li class="list-group-item">Product Rating : {{i.rating}}</li>
           <li class="list-group-item">Product Quentity : {{i.available_quentity}}</li>
         </ul>
+        <form method="POST" action="{% url 'add_to_cart' i.id %}">
+          {% csrf_token %}
+          <input type="number" min=1 max="{{i.available_quentity}}" id="cart_value" name="cart_value">
+          <button data-mdb-ripple-init type="submit" class="btn btn-primary btn-block mb-4">Add to cart</button>
+        </form>
         <div class="card-body">
+          {% if user.is_authenticated %}
           <a href="{% url 'update_product' i.id %}" class="card-link">Edit Product</a>
-          <a href="#" class="card-link">Delete Product</a>
+          <a href="{% url 'delete_product' i.id %}" class="card-link">Delete Product</a>
+          {% endif %}
         </div>
+
       </div>
     {% endfor%}
 </div>
