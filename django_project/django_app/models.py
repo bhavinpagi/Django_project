@@ -63,5 +63,6 @@ class UserOrders(models.Model):
     payment_type = models.CharField(max_length=20, choices = PAYMENT_CHOICES, default = 'CASH_ON_DELIVERY')
     total_amount = models.FloatField() 
 
+    class Meta:
+        verbose_name_plural = "User Orders"
 
-    

@@ -158,3 +158,17 @@ def display_cart(request):
     context = {"user_obj": user_obj, "cart_obj": cart_obj}
     return render(request, 'display_cart.html', context)
 
+def delete_cart_item(request, product_id):
+    user_obj = User.objects.filter(username=request.user.username).first()
+    user_id = user_obj.id
+    print("#########", user_id)
+    product_to_delete = UserCartModel.objects.filter(id=product_id).filter(user_id=user_id).delete()
+    return redirect('display_cart')
+
+@csrf_exempt
+def order_placed(request):
+    if request.method == "POST":
+        print("asds")
+        print(request.POST.getlist('product_placed[]'))
+        
+        return HttpResponse("success")

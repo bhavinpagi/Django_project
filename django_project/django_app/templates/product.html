@@ -2,9 +2,10 @@
 {% load static %}
 {% block content %}
 <div class="container">
+  <div class="row">
     <h1>Mobiles</h1>
     {% for i in products %}
-    <div class="card" style="width: 18rem;">
+    <div class="card" style="width: 17rem;">
         <img class="card-img-top" src="{{i.product_image.url}}" alt="Card image cap" style="height: 200px; width: 200px;">
         <div class="card-body">
           <h5 class="card-title">Product Name : {{i.product_name}}</h5>
@@ -23,11 +24,45 @@
         <div class="card-body">
           {% if user.is_authenticated %}
           <a href="{% url 'update_product' i.id %}" class="card-link">Edit Product</a>
-          <a href="{% url 'delete_product' i.id %}" class="card-link">Delete Product</a>
+          <!-- <a href="{% url 'delete_product' i.id %}" class="card-link">Delete Product</a> -->
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Launch demo modal
+          </button>
+          
           {% endif %}
         </div>
 
       </div>
+      <!-- Button trigger modal -->
+<!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Launch demo modal
+</button> -->
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal_{{i.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{i.product_name}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+      <!-- 1. Copy paste the Modal code 
+           2. Replace the delete button to Modal's "Launch Demo Modal button"
+           3. Provide unique id for every Modal's id attribute that is by adding PK at the end of the id_name
+           4. Add the delete product URL in the Modal's "Delete" button 
+           5. Close the modal and redirec to same page. 
+           6. Close button is already hadnling to close the modal with JS-->
     {% endfor%}
+  </div>
 </div>
 {% endblock %}
