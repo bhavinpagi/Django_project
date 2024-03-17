@@ -1,8 +1,9 @@
 import datetime
-
-from django.http import HttpResponse
+import json
+import uuid
+from django.http import HttpResponse, HttpResponsePermanentRedirect, JsonResponse
 from django.shortcuts import redirect, render
-from .models import Products, UserCartModel
+from .models import Products, UserAddress, UserCartModel, UserOrders
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
@@ -155,7 +156,9 @@ def add_to_cart(request, product_id):
 def display_cart(request):
     user_obj = User.objects.filter(username=request.user.username).first()
     cart_obj = UserCartModel.objects.filter(user_id_id=user_obj.id)
-    context = {"user_obj": user_obj, "cart_obj": cart_obj}
+
+    user_address = UserAddress.objects.filter(user_id=user_obj.id).first()
+    context = {"user_obj": user_obj, "cart_obj": cart_obj, "user_address": user_address}
     return render(request, 'display_cart.html', context)
 
 def delete_cart_item(request, product_id):
@@ -165,10 +168,69 @@ def delete_cart_item(request, product_id):
     product_to_delete = UserCartModel.objects.filter(id=product_id).filter(user_id=user_id).delete()
     return redirect('display_cart')
 
+
+def user_address(request):
+    if request.method == "POST":
+        line1 = request.POST.get('line1')
+        line2 = request.POST.get('line2')
+        city = request.POST.get('city')
+        zip_code = request.POST.get('zip_code')
+        state = request.POST.get('state')
+        country = request.POST.get('country')
+        if request.user.username and request.user.is_authenticated:
+            logged_in_user = User.objects.filter(username=request.user.username).first()
+
+        address_obj = UserAddress.objects.create(
+            line1=line1,
+            line2=line2,
+            city=city,
+            zip_code=zip_code,
+            state=state,
+            country=country,
+            user_id=logged_in_user
+        )
+        address_obj.save()
+        return redirect('display_cart')
+    context = {}
+    return render(request, 'user_address.html', context)
+
+
 @csrf_exempt
 def order_placed(request):
     if request.method == "POST":
-        print("asds")
-        print(request.POST.getlist('product_placed[]'))
         
-        return HttpResponse("success")
+        if request.user.username and request.user.is_authenticated:
+            logged_in_user = User.objects.filter(username=request.user.username).first()
+            
+            is_address_exists = UserAddress.objects.filter(user_id=logged_in_user.id).first()
+            if not is_address_exists:
+                return JsonResponse({'address_exists':False})
+            else:    
+                order_placed_list = request.POST.getlist('product_placed[]')
+                print(order_placed_list)
+                for orders in order_placed_list:
+                    cart_item = UserCartModel.objects.filter(user_id=logged_in_user.id).filter(id=orders).first()
+                    orders_placed_obj = UserOrders.objects.create(
+                        order_id=str(uuid.uuid4()),
+                        address_id=is_address_exists,
+                        order_placed_at=datetime.datetime.now(),
+                        user_id = logged_in_user,
+                        payment_type="CASH_ON_DELIVERY",
+                        product_total_quantity = cart_item.quantity if cart_item.quantity else 1,
+                        product_name= cart_item.product_id.product_name,
+                        product_image=cart_item.product_id.product_image,
+                        product_quantity= cart_item.quantity if cart_item.quantity else 1,
+                        total_amount=float(cart_item.quantity)*cart_item.product_id.price
+                    )
+                    orders_placed_obj.save()
+                    cart_item.delete()
+                return HttpResponse("success")
+
+        else:
+            pass
+
+def user_orders(request):
+    user_order_placed = UserOrders.objects.filter(user_id=request.user.id)
+
+    context = {"user_order_placed": user_order_placed}
+    return render(request, 'user_orders.html', context)

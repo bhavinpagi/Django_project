@@ -15,5 +15,7 @@ urlpatterns = [
     path('display_cart/', views.display_cart, name="display_cart"),
     path('delete_cart_item/<str:product_id>/', views.delete_cart_item, name="delete_cart_item"),
     path('order_placed/', views.order_placed, name="order_placed"),
+    path('user_address/', views.user_address, name="user_address"),
+    path('user_orders/', views.user_orders, name="user_orders")
     # path('modal/<str:product_id>/', views.modal, name="modal"),
 ]

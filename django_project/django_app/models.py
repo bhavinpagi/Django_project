@@ -39,6 +39,7 @@ class UserCartModel(models.Model):
         verbose_name_plural = "User Carts"
 
 class UserAddress(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     line1 = models.CharField(max_length=100)
     line2 = models.CharField(max_length=100)
     city = models.CharField(max_length=100)

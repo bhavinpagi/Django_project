@@ -5,6 +5,21 @@
 <div class="container">
     <h1>{{user_obj.username.capitalize}}'s Cart Products</h1>
     <button id="order_now" name="order_now" onclick="selected_product();">Order Now</button>
+    
+
+    <div class="card" style="width: 18rem;">
+      <div class="card-header">
+        Delivering to below address
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">{{user_address.line1}}, {{user_address.line2}}</li>
+        <li class="list-group-item">{{user_address.city}}, {{user_address.zip_code}}</li>
+        <li class="list-group-item">{{user_address.state}}, {{user_address.country}}</li>
+      </ul>
+    </div>
+
+
+
     {% for cart in cart_obj %}
     <div class="card" style="width: 18rem;">
       <div class="form-check">
@@ -41,8 +56,15 @@
         data: { 'product_placed' : placed_items  },
         type: 'POST', 
         url: 'http://127.0.0.1:8000/order_placed/',
-        success: function(answer){   
-          console.log("Data sent")
+        success: function(data){  
+          console.log(data['addres_exists']) 
+          if (data['address_exists']) {
+            console.log(data)
+          } else if (data === undefined) {
+            window.location.href = "http://127.0.0.1:8000/user_address/"
+            console.log("Should not redirect to the page")
+            console.log(data)
+          }
         }
      });
   }
